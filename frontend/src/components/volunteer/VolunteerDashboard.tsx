@@ -111,7 +111,7 @@ export const VolunteerDashboard: React.FC = () => {
     <div className="max-w-4xl mx-auto p-4 space-y-6">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          志工儀表板
+          義工儀表板
         </h1>
         <p className="text-gray-600">
           查看附近的服務請求，選擇您想要幫助的長者

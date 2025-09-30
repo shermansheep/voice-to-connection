@@ -78,18 +78,18 @@ export const VoiceRequest: React.FC = () => {
 
   const getStatusText = (status: ServiceRequest['status']) => {
     switch (status) {
-      case 'pending': return '正在尋找志工';
-      case 'matched': return '已找到志工';
-      case 'in_progress': return '志工正在協助';
+      case 'pending': return '正在尋找義工';
+      case 'matched': return '已找到義工';
+      case 'in_progress': return '義工正在協助';
       case 'completed': return '服務已完成';
     }
   };
 
   const getStatusMessage = (status: ServiceRequest['status']) => {
     switch (status) {
-      case 'pending': return '我們正在為您尋找合適的志工，請稍候...';
-      case 'matched': return '太好了！我們已經為您找到志工，他們很快就會聯絡您。';
-      case 'in_progress': return '志工正在為您提供服務，如有需要請直接聯絡志工。';
+      case 'pending': return '我們正在為您尋找合適的義工，請稍候...';
+      case 'matched': return '太好了！我們已經為您找到義工，他們很快就會聯絡您。';
+      case 'in_progress': return '義工正在為您提供服務，如有需要請直接聯絡義工。';
       case 'completed': return '服務已順利完成，感謝您使用我們的服務！';
     }
   };
@@ -121,7 +121,7 @@ export const VoiceRequest: React.FC = () => {
           語音服務請求
         </h1>
         <p className="text-gray-600">
-          請說出您需要的幫助，我們會為您找到合適的志工
+          請說出您需要的幫助，我們會為您找到合適的義工
         </p>
       </div>
 
@@ -191,7 +191,7 @@ export const VoiceRequest: React.FC = () => {
                 {request.status === 'matched' && (
                   <div className="mt-2 space-y-1">
                     <p className="text-sm text-gray-600">
-                      <strong>志工：</strong>{request.volunteer || '張小明'}
+                      <strong>義工：</strong>{request.volunteer || '張小明'}
                     </p>
                     {request.volunteerPhone && (
                       <p className="text-sm text-gray-600">
@@ -209,7 +209,7 @@ export const VoiceRequest: React.FC = () => {
                 {request.status === 'in_progress' && (
                   <div className="mt-2">
                     <p className="text-sm text-gray-600">
-                      <strong>服務志工：</strong>{request.volunteer || '張小明'}
+                      <strong>服務義工：</strong>{request.volunteer || '張小明'}
                     </p>
                     {request.volunteerPhone && (
                       <p className="text-sm text-gray-600">

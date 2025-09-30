@@ -25,7 +25,7 @@ export const StatusNotification: React.FC<StatusNotificationProps> = ({
         <div className="flex items-center">
           <ClockIcon className="w-6 h-6 text-yellow-600 mr-3" />
           <div>
-            <p className="font-medium text-yellow-800">正在尋找志工</p>
+            <p className="font-medium text-yellow-800">正在尋找義工</p>
             <p className="text-sm text-yellow-600">請稍候，我們正在為您配對...</p>
           </div>
         </div>
@@ -39,8 +39,8 @@ export const StatusNotification: React.FC<StatusNotificationProps> = ({
         <div className="flex items-start">
           <CheckCircleIcon className="w-6 h-6 text-blue-600 mr-3 mt-1" />
           <div>
-            <p className="font-medium text-blue-800">找到志工了！</p>
-            <p className="text-sm text-blue-600 mb-2">志工即將聯絡您</p>
+            <p className="font-medium text-blue-800">找到義工了！</p>
+            <p className="text-sm text-blue-600 mb-2">義工即將聯絡您</p>
             {volunteer && (
               <div className="space-y-1">
                 <div className="flex items-center text-sm">

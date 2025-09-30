@@ -28,7 +28,7 @@ const App: React.FC = () => {
                 <div className="bg-white shadow-sm border-b p-4 mb-6">
                   <div className="max-w-4xl mx-auto flex justify-between items-center">
                     <h1 className="text-xl font-semibold">Voice-to-Connection</h1>
-                    <div className="space-x-4">
+                    <div className="flex flex-col space-y-2">
                       <button 
                         onClick={() => setUserType('elderly')}
                         className={`px-4 py-2 rounded ${userType === 'elderly' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
@@ -39,7 +39,7 @@ const App: React.FC = () => {
                         onClick={() => setUserType('volunteer')}
                         className={`px-4 py-2 rounded ${userType === 'volunteer' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
                       >
-                        志工模式
+                        義工模式
                       </button>
                     </div>
                   </div>

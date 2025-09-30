@@ -120,7 +120,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
             <Button
               onClick={startRecording}
               size="lg"
-              className="w-full"
+              className="w-full flex items-center justify-center"
             >
               <MicrophoneIcon className="w-5 h-5 mr-2" />
               開始錄音
@@ -130,7 +130,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
               onClick={stopRecording}
               variant="danger"
               size="lg"
-              className="w-full"
+              className="w-full flex items-center justify-center"
             >
               <StopIcon className="w-5 h-5 mr-2" />
               停止錄音
@@ -142,7 +142,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
               onClick={playRecording}
               variant="secondary"
               size="lg"
-              className="w-full"
+              className="w-full flex items-center justify-center"
               disabled={isPlaying}
             >
               <PlayIcon className="w-5 h-5 mr-2" />

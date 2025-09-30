@@ -65,7 +65,7 @@ export const AdminDashboard: React.FC = () => {
       {
         id: '2',
         type: 'match_found',
-        description: '李爺爺的維修請求已配對志工',
+        description: '李爺爺的維修請求已配對義工',
         timestamp: new Date(Date.now() - 12 * 60 * 1000)
       },
       {
@@ -166,7 +166,7 @@ export const AdminDashboard: React.FC = () => {
                 <span className="font-medium">{stats.matchSuccessRate}%</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">活躍志工</span>
+                <span className="text-gray-600">活躍義工</span>
                 <span className="font-medium">{stats.activeVolunteers}/{stats.totalVolunteers}</span>
               </div>
             </div>

@@ -16,15 +16,10 @@ export const Home: React.FC = () => {
             透過語音技術連接長者與義工，讓關懷更簡單、更直接
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/login?type=elderly">
-              <Button size="lg" className="w-full sm:w-auto">
-                長者登入
-              </Button>
-            </Link>
-            <Link to="/login?type=volunteer">
-              <Button variant="secondary" size="lg" className="w-full sm:w-auto">
-                義工/家屬登入
+          <div className="flex justify-center px-4">
+            <Link to="/login">
+              <Button size="lg" className="w-48">
+                登入
               </Button>
             </Link>
           </div>
@@ -48,7 +43,7 @@ export const Home: React.FC = () => {
             </div>
             <h3 className="text-lg font-semibold mb-2">智能配對</h3>
             <p className="text-gray-600">
-              根據地點、技能和時間自動找到最適合的志工
+              根據地點、技能和時間自動找到最適合的義工
             </p>
           </div>
 
