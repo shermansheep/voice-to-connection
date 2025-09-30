@@ -6,17 +6,10 @@ import {
   CheckCircleIcon,
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
+import { adminAPI, AdminStats } from '../services/adminAPI';
+import { JobsTable } from '../components/admin/JobsTable';
 
-interface JobStats {
-  totalServices: number;
-  pendingServices: number;
-  matchedServices: number;
-  completedServices: number;
-  totalVolunteers: number;
-  activeVolunteers: number;
-  averageMatchTime: number;
-  matchSuccessRate: number;
-}
+
 
 interface RecentActivity {
   id: string;
@@ -26,7 +19,7 @@ interface RecentActivity {
 }
 
 export const AdminDashboard: React.FC = () => {
-  const [stats, setStats] = useState<JobStats>({
+  const [stats, setStats] = useState<AdminStats>({
     totalServices: 0,
     pendingServices: 0,
     matchedServices: 0,
@@ -40,17 +33,27 @@ export const AdminDashboard: React.FC = () => {
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
 
   useEffect(() => {
-    // Mock data - replace with actual API calls
-    setStats({
-      totalServices: 156,
-      pendingServices: 23,
-      matchedServices: 45,
-      completedServices: 88,
-      totalVolunteers: 78,
-      activeVolunteers: 34,
-      averageMatchTime: 18,
-      matchSuccessRate: 85.2
-    });
+    const fetchStats = async () => {
+      try {
+        const data = await adminAPI.getStats();
+        setStats(data);
+      } catch (error) {
+        console.error('Failed to fetch admin stats:', error);
+        // Fallback to mock data
+        setStats({
+          totalServices: 156,
+          pendingServices: 23,
+          matchedServices: 45,
+          completedServices: 88,
+          totalVolunteers: 78,
+          activeVolunteers: 34,
+          averageMatchTime: 18,
+          matchSuccessRate: 85.2
+        });
+      }
+    };
+    
+    fetchStats();
 
     setRecentActivity([
       {
@@ -73,6 +76,26 @@ export const AdminDashboard: React.FC = () => {
       }
     ]);
   }, []);
+
+  const mockJobs = [
+    {
+      id: '1',
+      serviceId: 'svc-001',
+      elderlyName: '王奶奶',
+      description: '需要購物協助',
+      status: 'matched' as const,
+      createdAt: new Date(Date.now() - 30 * 60 * 1000),
+      matchTime: 15
+    },
+    {
+      id: '2',
+      serviceId: 'svc-002',
+      elderlyName: '李爺爺',
+      description: '燈泡更換',
+      status: 'pending' as const,
+      createdAt: new Date(Date.now() - 10 * 60 * 1000)
+    }
+  ];
 
   const StatCard = ({ title, value, icon: Icon, color }: {
     title: string;
@@ -169,6 +192,11 @@ export const AdminDashboard: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* 配對工作表格 */}
+        <div className="mb-8">
+          <JobsTable jobs={mockJobs} />
         </div>
 
         {/* 最近活動 */}
