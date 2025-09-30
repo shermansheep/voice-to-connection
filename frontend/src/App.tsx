@@ -5,6 +5,7 @@ import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { VoiceRequest } from './components/elderly/VoiceRequest';
 import { VolunteerDashboard } from './components/volunteer/VolunteerDashboard';
+import { AdminDashboard } from './pages/AdminDashboard';
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -17,6 +18,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           
           {/* 模擬儀表板路由 */}
           <Route 

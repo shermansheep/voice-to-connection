@@ -93,6 +93,15 @@ functions:
           method: post
           cors: true
 
+  # 管理員相關
+  getAdminStats:
+    handler: src/functions/admin/getStats.handler
+    events:
+      - http:
+          path: admin/stats
+          method: get
+          cors: true
+
 resources:
   Resources:
     # DynamoDB Tables
