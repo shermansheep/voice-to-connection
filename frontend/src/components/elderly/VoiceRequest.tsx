@@ -2,18 +2,37 @@ import React, { useState } from 'react';
 import { VoiceRecorder } from '../common/VoiceRecorder';
 import { Button } from '../common/Button';
 import { CheckCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { StatusNotification } from './StatusNotification';
 
 interface ServiceRequest {
   id: string;
   description: string;
-  status: 'pending' | 'matched' | 'completed';
+  status: 'pending' | 'matched' | 'in_progress' | 'completed';
   createdAt: Date;
   volunteer?: string;
+  estimatedTime?: string;
+  volunteerPhone?: string;
 }
 
 export const VoiceRequest: React.FC = () => {
   const [currentRequest, setCurrentRequest] = useState<string>('');
-  const [requests, setRequests] = useState<ServiceRequest[]>([]);
+  const [requests, setRequests] = useState<ServiceRequest[]>([
+    {
+      id: 'demo-1',
+      description: '需要有人幫我去超市買一些日常用品。',
+      status: 'completed',
+      createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+      volunteer: '王志華'
+    },
+    {
+      id: 'demo-2', 
+      description: '家裡的燈泡壞了，需要有人幫忙更換。',
+      status: 'in_progress',
+      createdAt: new Date(Date.now() - 30 * 60 * 1000),
+      volunteer: '陳志強',
+      volunteerPhone: '+852 9123 4567'
+    }
+  ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleRecordingComplete = (audioBlob: Blob) => {
@@ -39,14 +58,39 @@ export const VoiceRequest: React.FC = () => {
       setRequests(prev => [newRequest, ...prev]);
       setCurrentRequest('');
       setIsSubmitting(false);
+      
+      // 模擬狀態更新
+      setTimeout(() => {
+        setRequests(prev => prev.map(req => 
+          req.id === newRequest.id 
+            ? { 
+                ...req, 
+                status: 'matched' as const,
+                volunteer: '李志明',
+                volunteerPhone: '+852 9876 5432',
+                estimatedTime: '15分鐘內到達'
+              }
+            : req
+        ));
+      }, 3000);
     }, 1000);
   };
 
   const getStatusText = (status: ServiceRequest['status']) => {
     switch (status) {
-      case 'pending': return '等待配對';
-      case 'matched': return '已配對';
-      case 'completed': return '已完成';
+      case 'pending': return '正在尋找志工';
+      case 'matched': return '已找到志工';
+      case 'in_progress': return '志工正在協助';
+      case 'completed': return '服務已完成';
+    }
+  };
+
+  const getStatusMessage = (status: ServiceRequest['status']) => {
+    switch (status) {
+      case 'pending': return '我們正在為您尋找合適的志工，請稍候...';
+      case 'matched': return '太好了！我們已經為您找到志工，他們很快就會聯絡您。';
+      case 'in_progress': return '志工正在為您提供服務，如有需要請直接聯絡志工。';
+      case 'completed': return '服務已順利完成，感謝您使用我們的服務！';
     }
   };
 
@@ -54,12 +98,24 @@ export const VoiceRequest: React.FC = () => {
     switch (status) {
       case 'pending': return 'text-yellow-600 bg-yellow-100';
       case 'matched': return 'text-blue-600 bg-blue-100';
+      case 'in_progress': return 'text-orange-600 bg-orange-100';
       case 'completed': return 'text-green-600 bg-green-100';
     }
   };
 
+  const latestRequest = requests[0];
+
   return (
     <div className="max-w-2xl mx-auto p-4 space-y-6">
+      {/* 狀態通知 */}
+      {latestRequest && (latestRequest.status === 'pending' || latestRequest.status === 'matched') && (
+        <StatusNotification
+          status={latestRequest.status}
+          volunteer={latestRequest.volunteer}
+          volunteerPhone={latestRequest.volunteerPhone}
+          estimatedTime={latestRequest.estimatedTime}
+        />
+      )}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           語音服務請求
@@ -122,19 +178,47 @@ export const VoiceRequest: React.FC = () => {
                 </span>
               </div>
               
-              {request.status === 'pending' && (
-                <div className="flex items-center text-sm text-gray-600">
-                  <ClockIcon className="w-4 h-4 mr-1" />
-                  正在為您尋找合適的志工...
-                </div>
-              )}
-              
-              {request.status === 'matched' && (
-                <div className="flex items-center text-sm text-blue-600">
-                  <CheckCircleIcon className="w-4 h-4 mr-1" />
-                  已配對志工：{request.volunteer || '張小明'}
-                </div>
-              )}
+              <div className={`p-3 rounded-lg mt-3 ${
+                request.status === 'pending' ? 'bg-yellow-50 border border-yellow-200' :
+                request.status === 'matched' ? 'bg-blue-50 border border-blue-200' :
+                request.status === 'in_progress' ? 'bg-orange-50 border border-orange-200' :
+                'bg-green-50 border border-green-200'
+              }`}>
+                <p className="text-sm font-medium text-gray-800 mb-1">
+                  {getStatusMessage(request.status)}
+                </p>
+                
+                {request.status === 'matched' && (
+                  <div className="mt-2 space-y-1">
+                    <p className="text-sm text-gray-600">
+                      <strong>志工：</strong>{request.volunteer || '張小明'}
+                    </p>
+                    {request.volunteerPhone && (
+                      <p className="text-sm text-gray-600">
+                        <strong>聯絡電話：</strong>{request.volunteerPhone}
+                      </p>
+                    )}
+                    {request.estimatedTime && (
+                      <p className="text-sm text-gray-600">
+                        <strong>預計到達：</strong>{request.estimatedTime}
+                      </p>
+                    )}
+                  </div>
+                )}
+                
+                {request.status === 'in_progress' && (
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-600">
+                      <strong>服務志工：</strong>{request.volunteer || '張小明'}
+                    </p>
+                    {request.volunteerPhone && (
+                      <p className="text-sm text-gray-600">
+                        <strong>聯絡電話：</strong>{request.volunteerPhone}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           ))}
         </div>

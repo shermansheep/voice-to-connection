@@ -1,13 +1,13 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import { DynamoDBClient, ScanCommand } from '@aws-sdk/client-dynamodb';
 
-const dynamodb = new DynamoDBClient({ region: process.env.REGION });
+const dynamodb = new DynamoDBClient({ region: 'ap-southeast-2' });
 
 export const handler: APIGatewayProxyHandler = async () => {
   try {
     // 獲取服務統計
     const servicesResult = await dynamodb.send(new ScanCommand({
-      TableName: process.env.SERVICES_TABLE,
+      TableName: 'Voice-to-Connection',
       Select: 'ALL_ATTRIBUTES'
     }));
 
@@ -17,9 +17,10 @@ export const handler: APIGatewayProxyHandler = async () => {
     const matchedServices = services.filter(s => s.status?.S === 'matched').length;
     const completedServices = services.filter(s => s.status?.S === 'completed').length;
 
-    // 獲取配對統計
+    // 獲取配對統計 (使用同一張表)
     const matchesResult = await dynamodb.send(new ScanCommand({
-      TableName: process.env.MATCHES_TABLE,
+      TableName: 'Voice-to-Connection',
+      FilterExpression: 'attribute_exists(matchId)',
       Select: 'ALL_ATTRIBUTES'
     }));
 
