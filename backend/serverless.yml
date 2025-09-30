@@ -1,0 +1,162 @@
+service: voice-to-connection-api
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'dev'}
+  environment:
+    STAGE: ${self:provider.stage}
+    REGION: ${self:provider.region}
+    USERS_TABLE: ${self:service}-users-${self:provider.stage}
+    SERVICES_TABLE: ${self:service}-services-${self:provider.stage}
+    MATCHES_TABLE: ${self:service}-matches-${self:provider.stage}
+    VOICE_BUCKET: ${self:service}-voice-${self:provider.stage}
+  
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.SERVICES_TABLE}"
+            - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MATCHES_TABLE}"
+        - Effect: Allow
+          Action:
+            - s3:GetObject
+            - s3:PutObject
+            - s3:DeleteObject
+          Resource:
+            - "arn:aws:s3:::${self:provider.environment.VOICE_BUCKET}/*"
+        - Effect: Allow
+          Action:
+            - transcribe:StartTranscriptionJob
+            - transcribe:GetTranscriptionJob
+            - polly:SynthesizeSpeech
+          Resource: "*"
+
+plugins:
+  - serverless-typescript
+  - serverless-offline
+
+functions:
+  # 認證相關
+  register:
+    handler: src/functions/auth/register.handler
+    events:
+      - http:
+          path: auth/register
+          method: post
+          cors: true
+
+  # 服務相關
+  createService:
+    handler: src/functions/services/createService.handler
+    events:
+      - http:
+          path: services
+          method: post
+          cors: true
+
+  getServices:
+    handler: src/functions/services/getServices.handler
+    events:
+      - http:
+          path: services
+          method: get
+          cors: true
+
+  # 配對相關
+  findMatches:
+    handler: src/functions/matching/findMatches.handler
+    events:
+      - http:
+          path: matching/find
+          method: post
+          cors: true
+
+  # 語音相關
+  transcribeVoice:
+    handler: src/functions/voice/transcribe.handler
+    events:
+      - http:
+          path: voice/transcribe
+          method: post
+          cors: true
+
+resources:
+  Resources:
+    # DynamoDB Tables
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.USERS_TABLE}
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
+    ServicesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.SERVICES_TABLE}
+        AttributeDefinitions:
+          - AttributeName: serviceId
+            AttributeType: S
+          - AttributeName: elderlyId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: serviceId
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: ElderlyIdIndex
+            KeySchema:
+              - AttributeName: elderlyId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
+
+    MatchesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.MATCHES_TABLE}
+        AttributeDefinitions:
+          - AttributeName: matchId
+            AttributeType: S
+          - AttributeName: serviceId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: matchId
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: ServiceIdIndex
+            KeySchema:
+              - AttributeName: serviceId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
+
+    # S3 Bucket for voice files
+    VoiceBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.VOICE_BUCKET}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders: ['*']
+              AllowedMethods: [GET, PUT, POST, DELETE]
+              AllowedOrigins: ['*']
